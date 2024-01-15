@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { WebView } from 'react-native-webview';
 import {
   MapMarker,
@@ -47,7 +47,7 @@ export type LeafletViewProps = {
   mapMarkers?: MapMarker[];
   mapShapes?: MapShape[];
   mapCenterPosition?: LatLng;
-  getSendMessage: (sendMessageType) => void;
+  getSendMessage: (arg0: sendMessageType) => void;
   ownPositionMarker?: OwnPositionMarker;
   zoom?: number;
   source?: string;
