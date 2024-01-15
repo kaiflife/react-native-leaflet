@@ -45,8 +45,10 @@ export type LeafletViewProps = {
   mapMarkers?: MapMarker[];
   mapShapes?: MapShape[];
   mapCenterPosition?: LatLng;
+  getSendMessage: () => void;
   ownPositionMarker?: OwnPositionMarker;
   zoom?: number;
+  source?: string;
   doDebug?: boolean;
   androidHardwareAccelerationDisabled?: boolean;
 };
@@ -58,6 +60,8 @@ const LeafletView: React.FC<LeafletViewProps> = ({
   onLoadStart,
   onMessageReceived,
   mapLayers,
+  getSendMessage,
+  source,
   mapMarkers,
   mapShapes,
   mapCenterPosition,
@@ -150,56 +154,9 @@ const LeafletView: React.FC<LeafletViewProps> = ({
     [logMessage, onMessageReceived, sendInitialMessage]
   );
 
-  //Handle mapLayers update
   useEffect(() => {
-    if (!initialized) {
-      return;
-    }
-    sendMessage({ mapLayers });
-  }, [initialized, mapLayers, sendMessage]);
-
-  //Handle mapMarkers update
-  useEffect(() => {
-    if (!initialized) {
-      return;
-    }
-    sendMessage({ mapMarkers });
-  }, [initialized, mapMarkers, sendMessage]);
-
-  //Handle mapShapes update
-  useEffect(() => {
-    if (!initialized) {
-      return;
-    }
-    sendMessage({ mapShapes });
-  }, [initialized, mapShapes, sendMessage]);
-
-  //Handle ownPositionMarker update
-  useEffect(() => {
-    if (!initialized || !ownPositionMarker) {
-      return;
-    }
-    sendMessage({
-	  ...ownPositionMarker,
-	  id: OWN_POSTION_MARKER_ID
-	});
-  }, [initialized, ownPositionMarker, sendMessage]);
-
-  //Handle mapCenterPosition update
-  useEffect(() => {
-    if (!initialized) {
-      return;
-    }
-    sendMessage({ mapCenterPosition });
-  }, [initialized, mapCenterPosition, sendMessage]);
-
-  //Handle zoom update
-  useEffect(() => {
-    if (!initialized) {
-      return;
-    }
-    sendMessage({ zoom });
-  }, [initialized, zoom, sendMessage]);
+    getSendMessage(sendMessage)
+  }, [sendMessage])
 
   return (
     <WebView
@@ -214,7 +171,7 @@ const LeafletView: React.FC<LeafletViewProps> = ({
       onError={onError}
       originWhitelist={['*']}
       renderLoading={renderLoading}
-      source={LEAFLET_HTML_SOURCE}
+      source={source || LEAFLET_HTML_SOURCE}
       allowFileAccess={true}
       allowUniversalAccessFromFileURLs={true}
       allowFileAccessFromFileURLs={true}
