@@ -35,6 +35,8 @@ const DEFAULT_MAP_LAYERS = [
 
 const DEFAULT_ZOOM = 15;
 
+type sendMessageType = (payload: MapMessage) => void
+
 export type LeafletViewProps = {
   renderLoading?: () => React.ReactElement;
   onError?: (syntheticEvent: NativeSyntheticEvent<WebViewError>) => void;
@@ -45,7 +47,7 @@ export type LeafletViewProps = {
   mapMarkers?: MapMarker[];
   mapShapes?: MapShape[];
   mapCenterPosition?: LatLng;
-  getSendMessage: () => void;
+  getSendMessage: (sendMessageType) => void;
   ownPositionMarker?: OwnPositionMarker;
   zoom?: number;
   source?: string;
@@ -71,7 +73,6 @@ const LeafletView: React.FC<LeafletViewProps> = ({
   androidHardwareAccelerationDisabled,
 }) => {
   const webViewRef = useRef<WebView>(null);
-  const [initialized, setInitialized] = useState(false);
 
   const logMessage = useCallback(
     (message: string) => {
@@ -117,7 +118,6 @@ const LeafletView: React.FC<LeafletViewProps> = ({
     startupMessage.zoom = zoom;
 
     sendMessage(startupMessage);
-    setInitialized(true);
     logMessage('sending initial message');
   }, [
     logMessage,
@@ -155,7 +155,7 @@ const LeafletView: React.FC<LeafletViewProps> = ({
   );
 
   useEffect(() => {
-    getSendMessage(sendMessage)
+    if (getSendMessage) getSendMessage(sendMessage)
   }, [sendMessage])
 
   return (
