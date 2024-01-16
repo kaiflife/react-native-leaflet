@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { WebView } from 'react-native-webview';
 import {
   MapMarker,
@@ -47,7 +47,7 @@ export type LeafletViewProps = {
   mapMarkers?: MapMarker[];
   mapShapes?: MapShape[];
   mapCenterPosition?: LatLng;
-  getSendMessage: (arg0: sendMessageType) => void;
+  getMapStateSetter: (arg0: setMapState) => void;
   ownPositionMarker?: OwnPositionMarker;
   zoom?: number;
   source?: string;
@@ -62,8 +62,8 @@ const LeafletView: React.FC<LeafletViewProps> = ({
   onLoadStart,
   onMessageReceived,
   mapLayers,
-  getSendMessage,
   source,
+  getMapStateSetter,
   mapMarkers,
   mapShapes,
   mapCenterPosition,
@@ -73,6 +73,8 @@ const LeafletView: React.FC<LeafletViewProps> = ({
   androidHardwareAccelerationDisabled,
 }) => {
   const webViewRef = useRef<WebView>(null);
+  const [mainMessage, setMainMessage] = useState({})
+  const [initialized, setInitialized] = useState(false);
 
   const logMessage = useCallback(
     (message: string) => {
@@ -117,7 +119,9 @@ const LeafletView: React.FC<LeafletViewProps> = ({
     }
     startupMessage.zoom = zoom;
 
-    sendMessage(startupMessage);
+    setMainMessage(startupMessage)
+    getMapStateSetter?.(setMainMessage)
+    setInitialized(true);
     logMessage('sending initial message');
   }, [
     logMessage,
@@ -154,9 +158,13 @@ const LeafletView: React.FC<LeafletViewProps> = ({
     [logMessage, onMessageReceived, sendInitialMessage]
   );
 
+  //Handle map state update
   useEffect(() => {
-    if (getSendMessage) getSendMessage(sendMessage)
-  }, [sendMessage])
+    if (!initialized) {
+      return;
+    }
+    sendMessage(mainMessage);
+  }, [initialized, mainMessage]);
 
   return (
     <WebView
