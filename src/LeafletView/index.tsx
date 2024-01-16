@@ -47,7 +47,7 @@ export type LeafletViewProps = {
   mapMarkers?: MapMarker[];
   mapShapes?: MapShape[];
   mapCenterPosition?: LatLng;
-  getMapStateSetter: (arg0: setMapState) => void;
+  getMapStateSetter: (arg0: sendMessageType) => void;
   ownPositionMarker?: OwnPositionMarker;
   zoom?: number;
   source?: string;
@@ -158,7 +158,7 @@ const LeafletView: React.FC<LeafletViewProps> = ({
     [logMessage, onMessageReceived, sendInitialMessage]
   );
 
-  //Handle map state update
+  //Handle mapLayers update
   useEffect(() => {
     if (!initialized) {
       return;
