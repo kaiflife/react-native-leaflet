@@ -42,6 +42,7 @@ export type LeafletViewProps = {
   onError?: (syntheticEvent: NativeSyntheticEvent<WebViewError>) => void;
   onLoadEnd?: () => void;
   onLoadStart?: () => void;
+  getRef?: (WebView ref) => void;
   onMessageReceived?: (message: WebviewLeafletMessage) => void;
   mapLayers?: MapLayer[];
   mapMarkers?: MapMarker[];
@@ -62,6 +63,7 @@ const LeafletView: React.FC<LeafletViewProps> = ({
   onLoadStart,
   onMessageReceived,
   mapLayers,
+  getRef,
   source,
   getMapStateSetter,
   mapMarkers,
@@ -169,7 +171,10 @@ const LeafletView: React.FC<LeafletViewProps> = ({
   return (
     <WebView
       containerStyle={styles.container}
-      ref={webViewRef}
+      ref={(ref) => {
+        webViewRef = ref;
+        getRef?.(ref);
+      }}
       javaScriptEnabled={true}
       onLoadEnd={onLoadEnd}
       onLoadStart={onLoadStart}
